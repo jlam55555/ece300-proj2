@@ -11,7 +11,7 @@
 % returns:
 % true_sym  = transmitted (scaled) symbols
 % est_sym   = estimated symbols
-function [true_sym, est_sym] = simulate_transmission(base_con, sym, N0, SNR)
+function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, sym, N0, SNR)
 
     N = length(sym);
     M = length(base_con);

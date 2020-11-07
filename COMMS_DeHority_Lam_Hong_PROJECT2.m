@@ -1,4 +1,4 @@
-N = 100000;
+N = 10000;
 N0 = 3;
 SNR = -4;
 
@@ -73,7 +73,7 @@ title('4-ary PSK')
 hold on;
 plot([-4:20], Theoretical_Perror_fouraryPSK);
 
-%%
+%% DPSK -- needs to be fixed
 M = 32
 thetaD = linspace(0,2*pi,M+1);
 thetaD = thetaD(2:M+1).';
@@ -98,3 +98,6 @@ scatter([-4:20],PerrorsfouraryDPSK_SNR);
 title('4-ary DPSK')
 hold on;
 plot([-4:20], Theoretical_Perror_fouraryDPSK);
+
+%% QAM
+M = 16;
