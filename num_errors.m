@@ -5,8 +5,7 @@
 % true_sym  = sequence of true symbols
 % est_sym   = sequence of transmitted symbols
 %
-function num_errors(true_sym, est_sym)
-
-    
-
+function errors = num_errors(true_sym, est_sym)
+    threshold = 0.0001;
+    errors = nnz(abs(true_sym-est_sym)>threshold);
 end
