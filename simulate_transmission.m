@@ -3,7 +3,7 @@
 % symbols after adding noise
 %
 % params:
-% base_con  = base constellation
+% base_con  = base constellation (M x 1)
 % sym       = noise-free transmitted symbols (from base_cons, N x 1)
 % N0        = noise power
 % SNR       = desired SNR per bit (dB)
@@ -13,12 +13,17 @@
 % est_sym   = estimated symbols
 function [true_sym, est_sym] = simulate_transmission(base_con, sym, N0, SNR)
 
+    M = length(base_con);
+
     % find desired average symbol energy
-    % ?????
+    E_avg = mean(abs(base_con).^2);
+    E_bav = E_avg / ceil(log2(M));
+    E_bav_des = 10^(SNR/20) * N0;
+    scaling_factor = sqrt(E_bav_des/E_bav);
     
     % scale base constellation and symbols to true constellation
-    scaled_con = base_con * ave_sym_energy;
-    true_sym = sym * ave_sym_energy;
+    scaled_con = base_con * scaling_factor;
+    true_sym = sym * scaling_factor;
     
     % produce noise and add to transmitted vectors
     variance = N0/2;
