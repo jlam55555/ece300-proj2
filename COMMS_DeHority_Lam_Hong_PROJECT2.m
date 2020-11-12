@@ -38,7 +38,7 @@ bi_ortho_m = bi_ortho_cons(2 * ceil(rand(N, 1)));
 
 Perrorsortho_SNR = zeros(1,25);
 Theoretical_Perror_ortho = zeros(1,25);
-for i = [1:25]
+for i = 1:25
     SNR = i-5;
     [true_sym_ortho, est_sym_ortho, root_Eb] = simulate_transmission(bi_ortho_cons, bi_ortho_m, N0, SNR);
     Perror = num_errors(true_sym_ortho, est_sym_ortho)/N;
@@ -56,30 +56,38 @@ ylabel('P_{error}');
 xlabel('SNR (dB)');
 
 %% PSK
-M = 32
-theta = linspace(0,2*pi,M+1);
-theta = theta(2:M+1).';
 
-fouraryPSK_cons = cos(theta)+j*sin(theta);
+Ms = [4 8 16 32];
+for i = 1:length(Ms)
+    M = Ms(i);
+    
+    % generate basis
+    theta = linspace(0,2*pi,M+1);
+    theta = theta(1:M).';
+    fouraryPSK_cons = cos(theta) + 1j*sin(theta);
 
-rand12 = floor(4*rand(N,1))+1;
-fouraryPSK_m = fouraryPSK_cons(round(rand12));
+    % generate signal sequence
+    fouraryPSK_m = fouraryPSK_cons(ceil(4 * rand(N, 1)));
 
-PerrorsfouraryPSK_SNR = zeros(1,25);
-Theoretical_Perror_fourary_PSK = zeros(1,25);
-for i = [1:25]
-    SNR = i-5;
-    [true_sym_fourPSK, est_sym_fourPSK, root_Eb] = simulate_transmission(fouraryPSK_cons, fouraryPSK_m, N0, SNR);
-    Perror = num_errors(true_sym_fourPSK, est_sym_fourPSK)/N;
-    PerrorsfouraryPSK_SNR(i) = Perror;
-    Theoretical_Perror_fouraryPSK(i) = 2*qfunc(root_Eb*sqrt(4/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
+    PerrorsfouraryPSK_SNR = zeros(1,25);
+    Theoretical_Perror_PSK = zeros(1,25);
+    for i = [1:25]
+        SNR = i-5;
+        [true_sym_fourPSK, est_sym_fourPSK, root_Eb] = simulate_transmission(fouraryPSK_cons, fouraryPSK_m, N0, SNR);
+        Perror = num_errors(true_sym_fourPSK, est_sym_fourPSK)/N;
+        PerrorsfouraryPSK_SNR(i) = Perror;
+        Theoretical_Perror_PSK(i) = 2*qfunc(root_Eb*sqrt(4/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
+    end
+
+    figure();
+    hold on;
+    scatter(-4:20, PerrorsfouraryPSK_SNR);
+    plot(-4:20, Theoretical_Perror_PSK);
+    hold off;
+    title(sprintf('PSK; M=%d', M));
+    ylabel('P_{error}');
+    xlabel('SNR (dB)');
 end
-
-figure;
-scatter([-4:20],PerrorsfouraryPSK_SNR);
-title('4-ary PSK')
-hold on;
-plot([-4:20], Theoretical_Perror_fouraryPSK);
 
 %% DPSK -- needs to be fixed
 % M = 32
@@ -124,14 +132,14 @@ for i = [1:25]
     [true_sym_fourPSK, est_sym_fourPSK, root_Eb] = simulate_transmission_diff(fouraryPSK_cons, fouraryPSK_m, N0, SNR);
     Perror = num_errors(true_sym_fourPSK, est_sym_fourPSK)/N;
     PerrorsfouraryPSK_SNR(i) = Perror;
-    Theoretical_Perror_fouraryPSK(i) = 2*qfunc(root_Eb*sqrt(4/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
+    Theoretical_Perror_PSK(i) = 2*qfunc(root_Eb*sqrt(4/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
 end
 
 figure;
 scatter([-4:20],PerrorsfouraryPSK_SNR);
 title('4-ary PSK')
 hold on;
-plot([-4:20], Theoretical_Perror_fouraryPSK);
+plot([-4:20], Theoretical_Perror_PSK);
 
 %% QAM
 M = 16;
