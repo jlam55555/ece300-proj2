@@ -19,7 +19,7 @@ function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, s
     % find desired average symbol energy
     E_avg = mean(abs(base_con).^2);
     E_bav = E_avg / ceil(log2(M));
-    E_bav_des = 10^(SNR/20) * N0;
+    E_bav_des = 10^(SNR/20) * N0 / 2;
     scaling_factor = sqrt(E_bav_des/E_bav);
     
     % scale base constellation and symbols to true constellation
