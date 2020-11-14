@@ -1,7 +1,7 @@
 %% TODO: make variable names more clear & concise
 
 % number of samples
-N = 1000;
+N = 10000;
 
 % noise power
 N0 = 1;
@@ -59,7 +59,7 @@ xlabel('SNR (dB)');
 
 %% PSK
 
-Ms = [4 8 16 32];
+Ms = [4];
 figure();
 tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
 for i = 1:length(Ms)
@@ -131,7 +131,7 @@ for i = 1:length(Ms)
 end
 
 %% QAM
-Ms = [4 16 64];
+Ms = [4, 16, 64];
 
 figure();
 tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
@@ -154,7 +154,9 @@ for i = 1:length(Ms)
         Perrors_QAM(i) = num_errors(qam_true_sym, qam_est_sym) / N;
         
         E_avg = mean(abs(qam_true_sym).^2);
-        Perrors_theo_QAM(i) = 4*qfunc(sqrt(2*3*E_avg/((M-1)*N0)));
+%         Perrors_theo_QAM(i) = 4*qfunc(sqrt(2*3*E_avg/((M-1)*N0)));
+        Prootm = 2*(1-1/sqrt(M))*qfunc(sqrt(2*3*E_avg/((M-1) * N0)));
+        Perrors_theo_QAM(i) = 1 - (1 - Prootm)^2;
     end
     
     nexttile();
