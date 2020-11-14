@@ -60,6 +60,8 @@ xlabel('SNR (dB)');
 %% PSK
 
 Ms = [4 8 16 32];
+figure();
+tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
 for i = 1:length(Ms)
     M = Ms(i);
     
@@ -81,7 +83,7 @@ for i = 1:length(Ms)
         Theoretical_Perror_PSK(j) = 2*qfunc(root_Eb*sqrt(4/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
     end
 
-    figure();
+    nexttile();
     hold on;
     scatter(-4:20, PerrorsfouraryPSK_SNR);
     plot(-4:20, Theoretical_Perror_PSK);
@@ -93,12 +95,13 @@ end
 
 %% DPSK
 
-% Ms = [4 8 16 32];
 Ms = [4 8 16 32];
+figure();
+tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
 for i = 1:length(Ms)
     M = Ms(i);
     
-    % generate basis
+    % generate constellation
     theta = linspace(0, 2*pi, M+1);
     theta = theta(1:M).';
     dpsk_cons = cos(theta) + 1j*sin(theta);
@@ -117,7 +120,7 @@ for i = 1:length(Ms)
         Theoretical_Perror_PSK(j) = 2*qfunc(root_Eb*sqrt(2/N0)*sin(pi/M));  %Pg. 416 of textbook WITH FUDGE FACTOR
     end
 
-    figure();
+    nexttile();
     hold on;
     scatter(-4:20, PerrorsfouraryPSK_SNR);
     plot(-4:20, Theoretical_Perror_PSK);
@@ -128,4 +131,35 @@ for i = 1:length(Ms)
 end
 
 %% QAM
-M = 16;
+Ms = [4 16 64];
+
+figure();
+tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
+for i = 1:length(Ms)
+    M = Ms(i);
+    
+    % generate constellation
+    x = (1:sqrt(M)) - (sqrt(M)+1)/2;
+    qam_cons = x + x.'*1j;
+    qam_cons = qam_cons(:); % flatten
+    
+    size(qam_cons)
+    
+    % generate signal sequence
+    qam_sym = qam_cons(ceil(M * rand(N, 1)));
+
+    Perrors_QAM = zeros(1, 25);
+    for i = 1:25
+        SNR = i-5;
+        [qam_true_sym, qam_est_sym, scale_factor] = simulate_transmission(qam_cons, qam_sym, N0, SNR);
+        Perrors_QAM(i) = num_errors(qam_true_sym, qam_est_sym) / N;
+    end
+    
+    nexttile();
+    hold on;
+    scatter(-4:20, Perrors_QAM);
+    hold off;
+    title(sprintf('QAM; M=%d', M));
+    ylabel('P_{error}');
+    xlabel('SNR (dB)');
+end
