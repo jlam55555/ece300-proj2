@@ -140,24 +140,27 @@ for i = 1:length(Ms)
     
     % generate constellation
     x = (1:sqrt(M)) - (sqrt(M)+1)/2;
-    qam_cons = x + x.'*1j;
-    qam_cons = qam_cons(:); % flatten
-    
-    size(qam_cons)
+    qam_cons = x + x.'*1j;      % use broadcasting to generate sqrt(M)*sqrt(M) square
+    qam_cons = qam_cons(:);     % flatten
     
     % generate signal sequence
     qam_sym = qam_cons(ceil(M * rand(N, 1)));
 
     Perrors_QAM = zeros(1, 25);
+    Perrors_theo_QAM = zeros(1, 25);
     for i = 1:25
         SNR = i-5;
         [qam_true_sym, qam_est_sym, scale_factor] = simulate_transmission(qam_cons, qam_sym, N0, SNR);
         Perrors_QAM(i) = num_errors(qam_true_sym, qam_est_sym) / N;
+        
+        E_avg = mean(abs(qam_true_sym).^2);
+        Perrors_theo_QAM(i) = 4*qfunc(sqrt(2*3*E_avg/((M-1)*N0)));
     end
     
     nexttile();
     hold on;
     scatter(-4:20, Perrors_QAM);
+    plot(-4:20, Perrors_theo_QAM);
     hold off;
     title(sprintf('QAM; M=%d', M));
     ylabel('P_{error}');
