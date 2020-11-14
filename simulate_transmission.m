@@ -19,7 +19,11 @@ function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, s
     % find desired average symbol energy
     E_avg = mean(abs(base_con).^2);
     E_bav = E_avg / ceil(log2(M));
-    E_bav_des = 10^(SNR/20) * N0 / 2;
+    
+    % using SNR = E_av / (N0 / 2)
+    % Eav = SNR * N0 / 2
+    % Ebav = SNR * N0 / 2 / log2(M)
+    E_bav_des = 10^(SNR/20) * N0 / 2 / ceil(log2(M));
     scaling_factor = sqrt(E_bav_des/E_bav);
     
     % scale base constellation and symbols to true constellation
@@ -27,7 +31,7 @@ function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, s
     true_sym = sym * scaling_factor;
     
     % produce noise and add to transmitted vectors
-    variance = N0/2;
+    variance = N0 / 2;
     noise_proc = sqrt(variance/2) * (randn([N, 1]) + 1j*randn([N, 1]));
     noisy_transmitted = true_sym + noise_proc;
     

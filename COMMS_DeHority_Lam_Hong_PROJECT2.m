@@ -21,7 +21,7 @@ for i = 1:25
     [true_sym_ap, est_sym_ap, root_Eb] = simulate_transmission(bin_ap_const, bin_ap_sym, N0, SNR);
     Perror = num_errors(true_sym_ap, est_sym_ap) / N;
     Perrorsap_SNR(i) = Perror;
-    Theoretical_Perror_ap(i) = qfunc(root_Eb*sqrt(2)*sqrt(2/N0));   % Pg. 406 of textbook WITH FUDGE FACTOR
+    Theoretical_Perror_ap(i) = qfunc(root_Eb*sqrt(4/N0));   % Pg. 406 of textbook WITH FUDGE FACTOR
     
 end
 
@@ -131,16 +131,24 @@ for i = 1:length(Ms)
 end
 
 %% QAM
-Ms = [4, 16, 64];
+Ms = [16, 32, 64];
 
 figure();
 tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
 for i = 1:length(Ms)
     M = Ms(i);
     
-    % generate constellation
-    x = (1:sqrt(M)) - (sqrt(M)+1)/2;
-    qam_cons = x + x.'*1j;      % use broadcasting to generate sqrt(M)*sqrt(M) square
+    % generate constellation (assume M is a power of 2)
+    if mod(log2(M), 2) == 0
+        x = (1:sqrt(M)) - (sqrt(M)+1)/2;
+        % use broadcasting to generate sqrt(M)*sqrt(M) square
+        qam_cons = x + x.'*1j;
+    else
+        x = (1:sqrt(M/2)) - (sqrt(M/2)+1)/2;
+        y = (1:sqrt(M*2)) - (sqrt(M*2)+1)/2;
+        % use broadcasting to generate sqrt(M/2)*sqrt(M*2) rectangular
+        qam_cons = x + y.'*1j;
+    end
     qam_cons = qam_cons(:);     % flatten
     
     % generate signal sequence
@@ -154,9 +162,12 @@ for i = 1:length(Ms)
         Perrors_QAM(i) = num_errors(qam_true_sym, qam_est_sym) / N;
         
         E_avg = mean(abs(qam_true_sym).^2);
-%         Perrors_theo_QAM(i) = 4*qfunc(sqrt(2*3*E_avg/((M-1)*N0)));
-        Prootm = 2*(1-1/sqrt(M))*qfunc(sqrt(2*3*E_avg/((M-1) * N0)));
-        Perrors_theo_QAM(i) = 1 - (1 - Prootm)^2;
+        if mod(log2(M), 2) == 0
+            Prootm = 2*(1-1/sqrt(M))*qfunc(sqrt(2*3*E_avg/((M-1) * N0)));
+            Perrors_theo_QAM(i) = 1 - (1 - Prootm)^2;
+        else
+            Perrors_theo_QAM(i) = 1 - (1 - 2*qfunc(sqrt(2*3*E_avg/((M-1)*N0))))^2;
+        end
     end
     
     nexttile();
