@@ -1,7 +1,7 @@
 %% TODO: make variable names more clear & concise
 
 % number of samples
-N = 10000;
+N = 1000;
 
 % noise power
 N0 = 1;
@@ -59,7 +59,7 @@ xlabel('SNR (dB)');
 
 %% PSK
 
-Ms = [4];
+Ms = [4 8 16 32];
 figure();
 tiledlayout(1, length(Ms), 'TileSpacing', 'Compact');
 for i = 1:length(Ms)
