@@ -11,7 +11,9 @@
 % returns:
 % true_sym  = transmitted (scaled) symbols
 % est_sym   = estimated symbols
-function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, sym, N0, SNR)
+% scaling_factor    = amount base constellation was scaled by
+function [true_sym, est_sym, scaling_factor] ...
+    = simulate_transmission(base_con, sym, N0, SNR)
 
     N = length(sym);
     M = length(base_con);
@@ -20,10 +22,9 @@ function [true_sym, est_sym, scaling_factor] = simulate_transmission(base_con, s
     E_avg = mean(abs(base_con).^2);
     E_bav = E_avg / ceil(log2(M));
     
-    % using SNR = E_av / (N0 / 2)
-    % Eav = SNR * N0 / 2
-    % Ebav = SNR * N0 / 2 / log2(M)
-    E_bav_des = 10^(SNR/20) * N0 / 2 / ceil(log2(M));
+    % using SNR = E_bav / (N0 / 2)
+    % Ebav = SNR * N0 / 2
+    E_bav_des = 10^(SNR/20) * N0 / 2;
     scaling_factor = sqrt(E_bav_des/E_bav);
     
     % scale base constellation and symbols to true constellation

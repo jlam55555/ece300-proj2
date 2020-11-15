@@ -8,8 +8,8 @@
 % returns:
 % N_hat = estimated signals
 function nearest = l2_nearest(con,  est)
-    
-    % transform complex numbers into a 2D real vectors (and tranpose)
+
+    % transform complex numbers into a 2D real vectors
     con_2d = [real(con) imag(con)];
     est_2d = [real(est) imag(est)];
     

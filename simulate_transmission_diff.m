@@ -14,7 +14,9 @@
 % true_sym  = transmitted (scaled) symbols; first one will be zero for
 %             convenience
 % est_sym   = estimated symbols
-function [true_sym, est_sym, scaling_factor] = simulate_transmission_diff(base_con, sym, N0, SNR)
+% scaling_factor    = amount base constellation was scaled by
+function [true_sym, est_sym, scaling_factor] ...
+    = simulate_transmission_diff(base_con, sym, N0, SNR)
 
     N = length(sym);
     M = length(base_con);
@@ -22,12 +24,8 @@ function [true_sym, est_sym, scaling_factor] = simulate_transmission_diff(base_c
     % find desired average symbol energy
     E_avg = mean(abs(base_con).^2);
     E_bav = E_avg / ceil(log2(M));
-    E_bav_des = 10^(SNR/20) * N0 / 2 / ceil(log2(M));
+    E_bav_des = 10^(SNR/20) * N0 / 2;
     scaling_factor = sqrt(E_bav_des/E_bav);
-    
-    % TODO: verify that this is a valid differential constellation
-    % (i.e., equally spaced throughout a circle, the first point at
-    % theta=0)
     
     % scale base constellation and symbols to true constellation
     scaled_con = base_con * scaling_factor;
