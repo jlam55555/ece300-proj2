@@ -1,4 +1,4 @@
-%% viewing the constellations
+%% visualizing the base constellations
 
 figure('visible', 'off', 'position', [0 0 1500 1500]);
 tiledlayout(3, 3, 'TileSpacing', 'Compact');
